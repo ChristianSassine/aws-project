@@ -1,28 +1,7 @@
 import boto3
-import json
 import utils
-import os
 from constants import *
 
-
-def deploy():
-    # Create configs directory
-    os.makedirs(utils.get_path(CONFIGS_PATH), exist_ok=True)
-
-    # Create Key/Pair for the EC2 instances
-    create_key_pair(KEY_PAIR_NAME)
-
-    # Create Security Group
-    grp_id = create_security_group(SECURITY_GROUP_NAME, get_default_ip_permissions())
-
-    # Create instances
-    mysql_cluster = create_ec2_instances("t2.micro", 1, KEY_PAIR_NAME, grp_id)
-
-    # Extract instance's information
-    cluster_1_info = get_instance_info(mysql_cluster)
-    utils.write_file(INSTANCE_INFO_PATH, json.dumps(cluster_1_info))
-
-    return cluster_1_info
 
 def create_key_pair(key_name: str) -> str:
     ec2 = boto3.client("ec2", config=BOTO3_CONFIG)
@@ -47,8 +26,7 @@ def create_security_group(group_name: str, ip_permissions: list):
 
     # Allow ingress
     ec2.authorize_security_group_ingress(
-        GroupId=security_group_id,
-        IpPermissions=ip_permissions
+        GroupId=security_group_id, IpPermissions=ip_permissions
     )
     print(f"Configured Security Group's '{group_name}' authorizations")
 
@@ -82,7 +60,7 @@ def get_default_ip_permissions():
     ]
 
 
-def get_secure_ip_permissions(ip_address):
+def get_secure_ip_permissions(ip_addresses: list):
     return [
         {
             "IpProtocol": "tcp",
@@ -93,6 +71,7 @@ def get_secure_ip_permissions(ip_address):
                     "CidrIp": f"{ip_address}/0",
                     "Description": "Allow HTTP connections from specific ip address",
                 }
+                for ip_address in ip_addresses
             ],
         },
     ]
