@@ -1,9 +1,14 @@
 from botocore.config import Config
 
 # Configurations
+### Names
 CONFIGS_PATH = "configs"
 KEY_PAIR_NAME = "CLOUD"
-SECURITY_GROUP_NAME = "deploy_group"
+DEFAULT_SECURITY_GROUP_NAME = "default_group"
+PRIVATE_SECURITY_GROUP_NAME = "private_group"
+### Paths
+GATEKEEPER_INFO_PATH = CONFIGS_PATH + "/gatekeeper_info.json"
+TRUSTED_HOST_PATH = CONFIGS_PATH + "/trusted_host_info.json"
 INSTANCE_INFO_PATH = CONFIGS_PATH + "/instance_info.json"
 
 # Scripts
