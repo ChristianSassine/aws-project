@@ -3,11 +3,13 @@ from utils import get_path
 from shutil import rmtree
 from constants import *
 
+sec_groups = [DEFAULT_SECURITY_GROUP_NAME, PRIVATE_SECURITY_GROUP_NAME]
 
-def cleanup(key_name, sec_group_name):
+def cleanup():
     terminate_all_instances()
-    delete_key(key_name)
-    delete_security_group(sec_group_name)
+    delete_key(KEY_PAIR_NAME)
+    for group in sec_groups:
+        delete_security_group(group)
 
 
 def delete_key(keyName):
