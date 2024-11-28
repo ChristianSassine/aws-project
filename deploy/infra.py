@@ -35,7 +35,6 @@ def create_security_group(group_name: str, ip_permissions: list):
 
 
 def modify_security_group_permissions(group_id: str, ip_permissions: list):
-    print(ip_permissions)
     ec2 = boto3.client("ec2", config=BOTO3_CONFIG)
 
     # Get current rules
