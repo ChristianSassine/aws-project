@@ -128,8 +128,7 @@ celerybeat.pid
 
 # Environments
 .env
-.venv
-.venv-win
+.venv*
 .idea
 env/
 venv/
