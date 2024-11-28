@@ -2,17 +2,29 @@ from botocore.config import Config
 
 # Configurations
 ### Names
-CONFIGS_PATH = "configs"
 KEY_PAIR_NAME = "CLOUD"
-DEFAULT_SECURITY_GROUP_NAME = "default_group"
-PRIVATE_SECURITY_GROUP_NAME = "private_group"
+OUTSIDE_SECURITY_GROUP_NAME = "default_group"
+TRUSTED_SECURITY_GROUP_NAME = "trusted_group"
+INTERNAL_SECURITY_GROUP_NAME = "internal_group"
+SCRIPT_NAME = "bootstrap_internal"
+
 ### Paths
-GATEKEEPER_INFO_PATH = CONFIGS_PATH + "/gatekeeper_info.json"
-TRUSTED_HOST_PATH = CONFIGS_PATH + "/trusted_host_info.json"
-INSTANCE_INFO_PATH = CONFIGS_PATH + "/instance_info.json"
+# INSTANCES INFOS
+ROOT_CONFIGS_PATH = "configs/"
+KEY_PAIR_PATH = ROOT_CONFIGS_PATH + KEY_PAIR_NAME + ".pem"
+GATEKEEPER_INFO_PATH = ROOT_CONFIGS_PATH + "gatekeeper_info.json"
+TRUSTED_HOST_INFO_PATH = ROOT_CONFIGS_PATH + "trusted_host_info.json"
+PROXY_INFO_PATH = ROOT_CONFIGS_PATH + "proxy_info.json"
+INSTANCE_INFO_PATH = ROOT_CONFIGS_PATH + "instance_info.json"
+
+# Apps
+GATEKEEPER_APP_PATH = "../apps/gatekeeper/main.py"
+TRUSTED_HOST_APP_PATH = "../apps/trusted_host/main.py"
+PROXY_APP_PATH = "../apps/proxy/main.py"
 
 # Scripts
-SCRIPTS = "scripts"
+SCRIPTS_PATH = "scripts/"
+BOOTSTRAP_PATH = SCRIPTS_PATH + SCRIPT_NAME + ".sh"
 
 # BOTO3 Configs
 REGION = "us-east-1"
