@@ -3,7 +3,7 @@ from utils import get_path
 from shutil import rmtree
 from constants import *
 
-sec_groups = [DEFAULT_SECURITY_GROUP_NAME, PRIVATE_SECURITY_GROUP_NAME]
+sec_groups = [OUTSIDE_SECURITY_GROUP_NAME, TRUSTED_SECURITY_GROUP_NAME, INTERNAL_SECURITY_GROUP_NAME]
 
 def cleanup():
     terminate_all_instances()
@@ -25,7 +25,7 @@ def delete_security_group(group_name):
 
 
 def delete_misc_files():
-    path = get_path(CONFIGS_PATH)
+    path = get_path(ROOT_CONFIGS_PATH)
     rmtree(path)
     print(f"Deleted configuration files")
 
