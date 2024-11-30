@@ -15,7 +15,8 @@ KEY_PAIR_PATH = ROOT_CONFIGS_PATH + KEY_PAIR_NAME + ".pem"
 GATEKEEPER_INFO_PATH = ROOT_CONFIGS_PATH + "gatekeeper_info.json"
 TRUSTED_HOST_INFO_PATH = ROOT_CONFIGS_PATH + "trusted_host_info.json"
 PROXY_INFO_PATH = ROOT_CONFIGS_PATH + "proxy_info.json"
-INSTANCE_INFO_PATH = ROOT_CONFIGS_PATH + "instance_info.json"
+WORKERS_INFO_PATH = ROOT_CONFIGS_PATH + "workers_info.json"
+MANAGER_INFO_PATH = ROOT_CONFIGS_PATH + "manager_info.json"
 
 # Apps
 GATEKEEPER_APP_PATH = "../apps/gatekeeper/main.py"
