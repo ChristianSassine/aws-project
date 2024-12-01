@@ -32,10 +32,10 @@ sudo mysql -e "SOURCE sakila-db/sakila-data.sql;"
 sudo sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-db=sakila --mysql-user="$MYSQL_USERNAME" --mysql-password="$MYSQL_USER_PASSWORD" prepare
 sudo sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-db=sakila --mysql-user="$MYSQL_USERNAME" --mysql-password="$MYSQL_USER_PASSWORD" run
 
-# ## Python environment
-# python3 -m venv .venv
-# source ~/.venv/bin/activate
-# pip install fastapi uvicorn requests
+## Python environment
+python3 -m venv .venv
+source ~/.venv/bin/activate
+pip install fastapi uvicorn requests mysql-connector-python
 
-# # Run server
-# sudo .venv/bin/uvicorn main:app --host 0.0.0.0 --port 80
+# Run server
+sudo .venv/bin/uvicorn main:app --host 0.0.0.0 --port 80
