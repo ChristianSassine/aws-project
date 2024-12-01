@@ -16,7 +16,7 @@ def bootstrap_instance(
     address: str,
     files_to_upload: list[File],
     instance_id: str,
-    bootstrap_async: bool,
+    bootstrap_async: bool = True,
 ):
     # Initialize clients
     print(f"[{instance_id}] Starting bootstrap process...")
@@ -57,7 +57,7 @@ def bootstrap_instance(
         sftp_client.close()
 
 
-def sftp_upload(sftp_client, file_path, remote_path):
+def sftp_upload(sftp_client: paramiko.SFTPClient, file_path, remote_path):
     # Upload the file
     sftp_client.put(file_path, remote_path)
     print(f"Successfully uploaded files")
