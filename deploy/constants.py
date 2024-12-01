@@ -6,7 +6,8 @@ KEY_PAIR_NAME = "CLOUD"
 OUTSIDE_SECURITY_GROUP_NAME = "default_group"
 TRUSTED_SECURITY_GROUP_NAME = "trusted_group"
 INTERNAL_SECURITY_GROUP_NAME = "internal_group"
-SCRIPT_NAME = "bootstrap_internal"
+APP_SCRIPT_NAME = "bootstrap_app"
+MYSQL_SCRIPT_NAME = "bootstrap_mysql"
 
 ### Paths
 # INSTANCES INFOS
@@ -22,10 +23,15 @@ MANAGER_INFO_PATH = ROOT_CONFIGS_PATH + "manager_info.json"
 GATEKEEPER_APP_PATH = "../apps/gatekeeper/main.py"
 TRUSTED_HOST_APP_PATH = "../apps/trusted_host/main.py"
 PROXY_APP_PATH = "../apps/proxy/main.py"
+MYSQL_APP_PATH = "../apps/mysql_cluster/"
+MYSQL_MANAGER_MAIN_PATH = MYSQL_APP_PATH + "manager.py"
+MYSQL_WORKER_MAIN_PATH = MYSQL_APP_PATH + "worker.py"
+MYSQL_DEP_PATH = "../apps/mysql_cluster/db.py"
 
 # Scripts
 SCRIPTS_PATH = "scripts/"
-BOOTSTRAP_PATH = SCRIPTS_PATH + SCRIPT_NAME + ".sh"
+APP_BOOTSTRAP_PATH = SCRIPTS_PATH + APP_SCRIPT_NAME + ".sh"
+MYSQL_BOOTSTRAP_PATH = SCRIPTS_PATH + MYSQL_SCRIPT_NAME + ".sh"
 
 # BOTO3 Configs
 REGION = "us-east-1"
