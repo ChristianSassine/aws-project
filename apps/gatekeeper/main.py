@@ -15,29 +15,43 @@ with open("trusted_host.json", "r") as f:
 async def health_check(request: Request):
     return
 
-@app.get("/")
-async def send_trusted_host_get(request: Request):
-    return await treat_message(request)
+@app.get("/direct")
+async def redirect_to_proxy(request: Request):
+    return await forward_message(request, "/direct")
 
+@app.get("/random")
+async def redirect_to_proxy(request: Request):
+    return await forward_message(request, "/random")
 
-@app.post("/")
-async def send_trusted_host_post(request: Request):
-    return await treat_message(request)
+@app.get("/customized")
+async def redirect_to_proxy(request: Request):
+    return await forward_message(request, "/customized")
 
-async def treat_message(request: Request):
-    # Get the instance with the smallest response time
+@app.post("/direct")
+async def redirect_to_proxy(request: Request):
+    return await forward_message(request, "/direct")
+
+@app.post("/random")
+async def redirect_to_proxy(request: Request):
+    return await forward_message(request, "/random")
+
+@app.post("/customized")
+async def redirect_to_proxy(request: Request):
+    return await forward_message(request, "/customized")
+
+async def forward_message(request: Request, path: str):
     print(f"Received message")
 
     # Forward the request to the selected server
     response = requests.request(
         method=request.method,
-        url=f"http://{trusted_host_ip}",
+        url=f"http://{trusted_host_ip}/{path}",
         headers=request.headers,
         data=await request.body(),
         params=request.query_params,
     )
 
-    # Return the response from the backend server
+    # Return the response to trusted host
     print(
         f"Received response from {trusted_host_ip}: {response.status_code} - {response.content}"
     )
