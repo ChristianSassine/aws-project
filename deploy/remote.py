@@ -56,6 +56,32 @@ def bootstrap_instance(
         ssh_client.close()
         sftp_client.close()
 
+def execute_command(key_path: str, address: str, command: str, is_async: bool = False):
+    print(f"Executing command on {address}...")
+    ssh_client = create_ssh_client(key_path, address)
+    transport = ssh_client.get_transport()
+    channel = transport.open_session()
+    try:
+        # Execute bootstrap script
+        cmd = command
+        if is_async:
+            cmd = f"nohup {command} > /dev/null 2>&1 &"
+            
+        channel.set_combine_stderr(True)
+        channel.exec_command(cmd)
+
+        # Output ssh
+        while not channel.exit_status_ready():
+            rl, _, _ = select.select([channel], [], [], 0.0)
+            if len(rl) > 0:
+                print(channel.recv(1024).decode("utf-8"))
+
+    except Exception as e:
+        print(f"Failed to execute command on {address}: {e}")
+    finally:
+        channel.close()
+        transport.close()
+        ssh_client.close()
 
 def sftp_upload(sftp_client: paramiko.SFTPClient, file_path, remote_path):
     # Upload the file
