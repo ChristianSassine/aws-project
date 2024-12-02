@@ -36,6 +36,3 @@ sudo sysbench /usr/share/sysbench/oltp_read_only.lua --mysql-db=sakila --mysql-u
 python3 -m venv .venv
 source ~/.venv/bin/activate
 pip install fastapi uvicorn requests mysql-connector-python
-
-# Run server
-sudo .venv/bin/uvicorn main:app --host 0.0.0.0 --port 80
