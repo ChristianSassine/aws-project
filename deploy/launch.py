@@ -3,8 +3,9 @@ import json
 from utils import *
 from constants import *
 from infra import *
-from remote import bootstrap_instance, File
+from remote import bootstrap_instance, File, execute_command
 from health_check import health_check_instances
+import threading
 
 async def deploy():
     # Create configs directory
@@ -72,12 +73,25 @@ async def deploy():
     # Bootstrap the instances
     setup_instances(gatekeeper_info, trusted_host_info, proxy_info, mysql_workers_info, mysql_manager_info)
 
+    # Execute commands
+    launch_apps(mysql_manager_info, mysql_workers_info)
+
     # Health check to make sure all the servers are active
     instances_info = [gatekeeper_info, trusted_host_info, proxy_info, mysql_manager_info] + mysql_workers_info
     await health_check_instances(instances_info)
 
     # Modify the security groups to tighten security
-    tighten_security_groups(trusted_grp_id, internal_grp_id, gatekeeper_info, proxy_info, trusted_host_info, mysql_manager_info, mysql_workers_info)
+    # tighten_security_groups(trusted_grp_id, internal_grp_id, gatekeeper_info, proxy_info, trusted_host_info, mysql_manager_info, mysql_workers_info)
+
+# Will run apps of mysql workers and manager and output their logs (To be able to see the benchmarking)
+def launch_apps(mysql_manager_info, mysql_workers_info):
+    addresses = [worker[InstanceInfo.PUBLIC_IP.value] for worker in mysql_workers_info] + [mysql_manager_info[InstanceInfo.PUBLIC_IP.value]]
+    threads = []
+    cmd = "sudo .venv/bin/uvicorn main:app --host 0.0.0.0 --port 80"
+    for address in addresses:
+        t = threading.Thread(target=execute_command, args=[get_path(KEY_PAIR_PATH), address, cmd])
+        t.start()
+        threads.append(t)
 
 def tighten_security_groups(trusted_grp_id, internal_grp_id, gatekeeper_info, proxy_info, trusted_host_info, mysql_manager_info, mysql_workers_info):
     modify_security_group_permissions(
@@ -147,6 +161,7 @@ def setup_instances(gatekeeper_info, trusted_host_info, proxy_info, workers_info
                 File(get_path(MYSQL_DEP_PATH), "db.py"),
             ],
             worker_info[InstanceInfo.ID.value],
+            False
         )
     
     bootstrap_instance(
@@ -159,4 +174,5 @@ def setup_instances(gatekeeper_info, trusted_host_info, proxy_info, workers_info
                 File(get_path(WORKERS_INFO_PATH), "workers.json"),
             ],
             manager_info[InstanceInfo.ID.value],
+            False
         )
