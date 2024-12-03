@@ -8,6 +8,7 @@ TRUSTED_SECURITY_GROUP_NAME = "trusted_group"
 INTERNAL_SECURITY_GROUP_NAME = "internal_group"
 APP_SCRIPT_NAME = "bootstrap_app"
 MYSQL_SCRIPT_NAME = "bootstrap_mysql"
+IPTABLES_CONFIG_NAME = "configure_iptables"
 
 ### Paths
 # INSTANCES INFOS
@@ -32,6 +33,7 @@ MYSQL_DEP_PATH = "../apps/mysql_cluster/db.py"
 SCRIPTS_PATH = "scripts/"
 APP_BOOTSTRAP_PATH = SCRIPTS_PATH + APP_SCRIPT_NAME + ".sh"
 MYSQL_BOOTSTRAP_PATH = SCRIPTS_PATH + MYSQL_SCRIPT_NAME + ".sh"
+IPTABLES_CONFIG_PATH = SCRIPTS_PATH + IPTABLES_CONFIG_NAME + ".sh"
 
 # BOTO3 Configs
 REGION = "us-east-1"

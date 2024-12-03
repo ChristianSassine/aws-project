@@ -72,17 +72,18 @@ async def deploy():
     setup_instances(gatekeeper_info, trusted_host_info, proxy_info, mysql_workers_info, mysql_manager_info)
 
     # Execute commands
-    launch_apps(mysql_manager_info, mysql_workers_info)
+    launch_mysql_apps(mysql_manager_info, mysql_workers_info)
 
     # Health check to make sure all the servers are active
     instances_info = [gatekeeper_info, trusted_host_info, proxy_info, mysql_manager_info] + mysql_workers_info
     await health_check_instances(instances_info)
-
-    # Modify the security groups to tighten security
-    # tighten_security_groups(trusted_grp_id, internal_grp_id, gatekeeper_info, proxy_info, trusted_host_info, mysql_manager_info, mysql_workers_info)
+    
+    # Tighten security by modifying the security groups and the trusted host's iptables
+    configure_trusted_host_ip_tables(gatekeeper_info, trusted_host_info, proxy_info)
+    tighten_security_groups(trusted_grp_id, internal_grp_id, gatekeeper_info, proxy_info, trusted_host_info, mysql_manager_info, mysql_workers_info)
 
 # Will run apps of mysql workers and manager and output their logs (To be able to see the benchmarking)
-def launch_apps(mysql_manager_info, mysql_workers_info):
+def launch_mysql_apps(mysql_manager_info, mysql_workers_info):
     mysql_cluster = mysql_workers_info + [mysql_manager_info]
     threads = []
     for node in mysql_cluster:
@@ -92,6 +93,12 @@ def launch_apps(mysql_manager_info, mysql_workers_info):
         t = threading.Thread(target=execute_command, args=[get_path(KEY_PAIR_PATH), address, cmd])
         t.start()
         threads.append(t)
+
+def configure_trusted_host_ip_tables(gatekeeper_info, trusted_host_info, proxy_info):
+    gatekeeper_ip, proxy_ip = gatekeeper_info[InstanceInfo.PRIVATE_IP.value], proxy_info[InstanceInfo.PRIVATE_IP.value]
+    trusted_host_ip = trusted_host_info[InstanceInfo.PUBLIC_IP.value]
+    cmd = f"chmod +x iptables.sh && ./iptables.sh {gatekeeper_ip} {proxy_ip}"
+    execute_command(get_path(KEY_PAIR_PATH), trusted_host_ip, cmd)
 
 def tighten_security_groups(trusted_grp_id, internal_grp_id, gatekeeper_info, proxy_info, trusted_host_info, mysql_manager_info, mysql_workers_info):
     modify_security_group_permissions(
@@ -117,6 +124,7 @@ def tighten_security_groups(trusted_grp_id, internal_grp_id, gatekeeper_info, pr
 
 
 def setup_instances(gatekeeper_info, trusted_host_info, proxy_info, workers_info, manager_info):
+    # Gatekeeper
     bootstrap_instance(
         get_path(KEY_PAIR_PATH),
         gatekeeper_info[InstanceInfo.PUBLIC_IP.value],
@@ -128,6 +136,7 @@ def setup_instances(gatekeeper_info, trusted_host_info, proxy_info, workers_info
         gatekeeper_info[InstanceInfo.ID.value],
     )
 
+    # Trusted Host
     bootstrap_instance(
         get_path(KEY_PAIR_PATH),
         trusted_host_info[InstanceInfo.PUBLIC_IP.value],
@@ -135,8 +144,9 @@ def setup_instances(gatekeeper_info, trusted_host_info, proxy_info, workers_info
             File(get_path(APP_BOOTSTRAP_PATH), "bootstrap.sh"),
             File(get_path(TRUSTED_HOST_APP_PATH), "main.py"),
             File(get_path(PROXY_INFO_PATH), "proxy.json"),
+            File(get_path(IPTABLES_CONFIG_PATH), "iptables.sh"),
         ],
-        trusted_host_info[InstanceInfo.ID.value],
+        trusted_host_info[InstanceInfo.ID.value]
     )
 
     bootstrap_instance(
