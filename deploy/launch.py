@@ -83,6 +83,10 @@ async def deploy():
     # Launch mysql cluster apps
     launch_mysql_apps(mysql_manager_info, mysql_workers_info)
 
+    # Health check to make sure all the sql apps are active
+    instances_info = [mysql_manager_info] + mysql_workers_info
+    await health_check_instances(instances_info)
+
 # Will run apps of mysql workers and manager and output their logs (To be able to see the benchmarking)
 def launch_mysql_apps(mysql_manager_info, mysql_workers_info):
     mysql_cluster = mysql_workers_info + [mysql_manager_info]
