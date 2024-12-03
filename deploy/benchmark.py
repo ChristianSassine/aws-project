@@ -45,8 +45,9 @@ async def launch_requests():
     
     modes = ["direct", "random", "customized"]
 
-
+    INTERVAL = 5    # Timeout for 5 seconds for better readability
     for mode in modes:
+        time.sleep(INTERVAL)
         start_time = time.time()
         print(f"Launching requests for {mode} mode")
         async with aiohttp.ClientSession() as session:
