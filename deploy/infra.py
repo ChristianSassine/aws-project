@@ -83,6 +83,33 @@ def get_outside_ip_permissions():
         },
     ]
 
+def get_secure_ip_permissions_with_ssh(ip_addresses: list):
+    return [
+        {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "IpRanges": [
+                {
+                    "CidrIp": f"{ip_address}/32",
+                    "Description": "Allow SSH connections from specific ip address",
+                }
+                for ip_address in ip_addresses
+            ],
+        },
+        {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "IpRanges": [
+                {
+                    "CidrIp": f"{ip_address}/32",
+                    "Description": "Allow HTTP connections from specific ip address",
+                }
+                for ip_address in ip_addresses
+            ],
+        },
+    ]
 
 def get_secure_ip_permissions(ip_addresses: list):
     return [

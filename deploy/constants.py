@@ -9,6 +9,7 @@ INTERNAL_SECURITY_GROUP_NAME = "internal_group"
 APP_SCRIPT_NAME = "bootstrap_app"
 MYSQL_SCRIPT_NAME = "bootstrap_mysql"
 IPTABLES_CONFIG_NAME = "configure_iptables"
+IP_ENV = "IP_ADDR"
 
 ### Paths
 # INSTANCES INFOS

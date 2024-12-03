@@ -13,7 +13,6 @@ async def deploy():
 
     # Create Key/Pair for the EC2 instances
     create_key_pair(KEY_PAIR_NAME)
-    # TODO: Maybe assign a new key for internal?
 
     # Deploy Gatekeeper
     ## Create Security Group
@@ -71,16 +70,18 @@ async def deploy():
     # Bootstrap the instances
     setup_instances(gatekeeper_info, trusted_host_info, proxy_info, mysql_workers_info, mysql_manager_info)
 
-    # Execute commands
-    launch_mysql_apps(mysql_manager_info, mysql_workers_info)
+    
 
     # Health check to make sure all the servers are active
-    instances_info = [gatekeeper_info, trusted_host_info, proxy_info, mysql_manager_info] + mysql_workers_info
+    instances_info = [gatekeeper_info, trusted_host_info, proxy_info] 
     await health_check_instances(instances_info)
     
-    # Tighten security by modifying the security groups and the trusted host's iptables
+    # # Tighten security by modifying the security groups and the trusted host's iptables
     configure_trusted_host_ip_tables(gatekeeper_info, trusted_host_info, proxy_info)
-    tighten_security_groups(trusted_grp_id, internal_grp_id, gatekeeper_info, proxy_info, trusted_host_info, mysql_manager_info, mysql_workers_info)
+    tighten_security_groups(trusted_grp_id, internal_grp_id, gatekeeper_info, proxy_info, trusted_host_info, mysql_manager_info, mysql_workers_info)\
+    
+    # Launch mysql cluster apps
+    launch_mysql_apps(mysql_manager_info, mysql_workers_info)
 
 # Will run apps of mysql workers and manager and output their logs (To be able to see the benchmarking)
 def launch_mysql_apps(mysql_manager_info, mysql_workers_info):
@@ -113,11 +114,12 @@ def tighten_security_groups(trusted_grp_id, internal_grp_id, gatekeeper_info, pr
 
     modify_security_group_permissions(
         internal_grp_id,
-        get_secure_ip_permissions(
+        get_secure_ip_permissions_with_ssh(
             [
                 proxy_info[InstanceInfo.PRIVATE_IP.value],
                 trusted_host_info[InstanceInfo.PRIVATE_IP.value],
                 mysql_manager_info[InstanceInfo.PRIVATE_IP.value],
+                os.getenv(IP_ENV)   # Allow ssh from this machine (So we can monitor the benchmark from the cluster)
             ] + [worker_info[InstanceInfo.PRIVATE_IP.value] for worker_info in mysql_workers_info]
         ),
     )
@@ -149,6 +151,7 @@ def setup_instances(gatekeeper_info, trusted_host_info, proxy_info, workers_info
         trusted_host_info[InstanceInfo.ID.value]
     )
 
+    # Proxy
     bootstrap_instance(
         get_path(KEY_PAIR_PATH),
         proxy_info[InstanceInfo.PUBLIC_IP.value],
@@ -161,6 +164,7 @@ def setup_instances(gatekeeper_info, trusted_host_info, proxy_info, workers_info
         proxy_info[InstanceInfo.ID.value],
     )
 
+    # Workers
     for worker_info in workers_info:
         bootstrap_instance(
             get_path(KEY_PAIR_PATH),
@@ -174,6 +178,7 @@ def setup_instances(gatekeeper_info, trusted_host_info, proxy_info, workers_info
             False
         )
     
+    # Manager
     bootstrap_instance(
             get_path(KEY_PAIR_PATH),
             manager_info[InstanceInfo.PUBLIC_IP.value],
