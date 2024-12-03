@@ -61,8 +61,6 @@ async def deploy():
     mysql_workers_info = get_instances_info(mysql_workers)
     write_file(WORKERS_INFO_PATH, json.dumps(mysql_workers_info))
 
-    print(mysql_workers_info)
-
     ## Create Mysql Manager
     mysql_manager = create_ec2_instances("t2.micro", 1, KEY_PAIR_NAME, internal_grp_id)
     
@@ -85,10 +83,12 @@ async def deploy():
 
 # Will run apps of mysql workers and manager and output their logs (To be able to see the benchmarking)
 def launch_apps(mysql_manager_info, mysql_workers_info):
-    addresses = [worker[InstanceInfo.PUBLIC_IP.value] for worker in mysql_workers_info] + [mysql_manager_info[InstanceInfo.PUBLIC_IP.value]]
+    mysql_cluster = mysql_workers_info + [mysql_manager_info]
     threads = []
-    cmd = "sudo .venv/bin/uvicorn main:app --host 0.0.0.0 --port 80"
-    for address in addresses:
+    for node in mysql_cluster:
+        node_ID = node[InstanceInfo.ID.value]
+        cmd = f"echo {node_ID} > ID && sudo .venv/bin/uvicorn main:app --host 0.0.0.0 --port 80"
+        address = node[InstanceInfo.PUBLIC_IP.value]
         t = threading.Thread(target=execute_command, args=[get_path(KEY_PAIR_PATH), address, cmd])
         t.start()
         threads.append(t)
