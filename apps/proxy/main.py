@@ -22,7 +22,7 @@ with open("manager.json", "r") as f:
 heap = [[datetime.timedelta(), worker] for worker in workers] + [[datetime.timedelta(), manager]]
 
 @app.get("/health", status_code=HTTPStatus.OK)
-async def health_check(request: Request):
+async def health_check():
     return
 
 # Use Direct hit mode

@@ -6,7 +6,6 @@ from datetime import datetime
 import db
 import json
 from pydantic import BaseModel
-import os
 
 # Request body
 class New_Actor_Request(BaseModel):

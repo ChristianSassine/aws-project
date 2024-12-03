@@ -12,7 +12,7 @@ with open("proxy.json", "r") as f:
     proxy = proxy_data["Private IP"]
 
 @app.get("/health", status_code=HTTPStatus.OK)
-async def health_check(request: Request):
+async def health_check():
     return
 
 @app.get("/direct")

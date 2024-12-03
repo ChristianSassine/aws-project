@@ -4,7 +4,6 @@ from http import HTTPStatus
 import db
 from pydantic import BaseModel
 from datetime import datetime
-import argparse
 
 
 # Request body
