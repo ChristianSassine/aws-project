@@ -18,3 +18,5 @@ sudo iptables -A INPUT -i lo -j ACCEPT
 sudo iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
+# Show the rules
+sudo iptables -L -v -n
