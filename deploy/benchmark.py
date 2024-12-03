@@ -48,8 +48,8 @@ async def launch_requests():
     INTERVAL = 5    # Timeout for 5 seconds for better readability
     for mode in modes:
         time.sleep(INTERVAL)
-        start_time = time.time()
         print(f"Launching requests for {mode} mode")
+        start_time = time.time()
         async with aiohttp.ClientSession() as session:
             print("Starting READ requests...")
             tasks = [call_endpoint_http_get(session, i, mode, gatekeeper_address) for i in range(num_requests)]
