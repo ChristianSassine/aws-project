@@ -9,6 +9,7 @@ async def deploy():
     await launch.deploy()
     await benchmark.launch_requests()
     cleanup()
+    sys.exit()
 
 if __name__ == "__main__":
     args = sys.argv[1:]
