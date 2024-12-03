@@ -1,7 +1,7 @@
 #!/bin/bash
 
-MYSQL_USERNAME="projectUser"
-MYSQL_USER_PASSWORD="ukMULbEQ@;U8B"
+MYSQL_USERNAME="projectUser"            # Change for actual use
+MYSQL_USER_PASSWORD="ukMULbEQ@;U8B"     # Change for actual use
 
 ## Exit if an error occurs
 set -e
